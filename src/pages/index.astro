@@ -1,11 +1,21 @@
 ---
 import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
+import type {MarkdownInstance} from "astro"
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
 // Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+
+function loadPost<T extends Record<string, any>>(md: MarkdownInstance<T>): string {
+	const content = md.compiledContent();
+	console.log("Type is " + content.constructor.name)
+	return content.slice(0, content.indexOf("<!-- MORE -->"));
+}
+
+const post = await Object.values(import.meta.glob("/src/test-content.md", {eager: true}))[0]
+
 ---
 
 <Layout>
-	<Welcome />
+	<Fragment set:html={loadPost(post)} />
 </Layout>
